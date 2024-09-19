@@ -1,0 +1,1 @@
+This is my personal project to automate the process of creating tik-tok videos using ai prompts, tts, and auto-generated subtitles
