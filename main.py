@@ -70,15 +70,3 @@ finalVidLoc = generateFinalVideo(subtitleFileLoc=subtitleFileLoc,
                    )
 
 print(f'video saved at: {finalVidLoc}')
-
-
-
-
-
-#youtube upload
-
-
-
-#############
-#automate filename structure rather than hard code
-#############
