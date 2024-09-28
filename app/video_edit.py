@@ -6,27 +6,27 @@ import math
 import random
 
 def cropBackgroundVideo(audioFileLoc:str, backgroundClipLoc: str) -> VideoFileClip:
+    
+
     mainBackground = VideoFileClip(backgroundClipLoc)
     mainAudio = AudioFileClip(audioFileLoc)
+    audioDuration = mainAudio.duration
+    mainAudio.close()    #fixing bug for FFMPEG Error...
 
-
-    maxClipStart = math.floor(mainBackground.duration) - math.floor(mainAudio.duration) 
+    maxClipStart = math.floor(mainBackground.duration) - math.floor(audioDuration) 
     clipStart = random.randint(0,maxClipStart)
 
-    cropBackgroundClip = mainBackground.subclip(clipStart, clipStart + mainAudio.duration)
+    cropBackgroundClip = mainBackground.subclip(clipStart, clipStart + audioDuration)
     (w,h) = cropBackgroundClip.size
     cropBackgroundClip = crop(cropBackgroundClip, width= 480, height= 720, x_center= w/2, y_center = h/2)
     
-    print('successfull crop')
-    cropBackgroundClip.write_videofile('testing_crop.mp4')
-    
-    #fixing bug for FFMPEG Error...
-    mainAudio.close()
+    cropBackgroundClip.write_videofile('media/background_video/cropped_temp_background.mp4')
+
 
     return cropBackgroundClip
 
 
-def generateFinalVideo(subtitleFileLoc, audioFileLoc, backgroundClipLoc, finalVideoName):
+def generateFinalVideo(subtitleFileLoc: str, audioFileLoc: str, backgroundClipLoc: str, finalVideoName: str):
     finalVideoFolder = 'final_videos'
 
     #create audioclip for audio file
@@ -39,13 +39,13 @@ def generateFinalVideo(subtitleFileLoc, audioFileLoc, backgroundClipLoc, finalVi
     #Design for subtitles
     generator = lambda txt: TextClip(
         txt,
-        font="./fonts/bold_font.ttf",
-        fontsize=25,
+        font='Arial-Rounded-MT-Bold', #"./fonts/bold_font.ttf",
+        fontsize=32,
         color="#ffffff",
         stroke_color="black",
-        stroke_width=3,
+        stroke_width=1.5,
     )
-    
+
     #create subtitle video clip
     finalSubs = subtitles.SubtitlesClip(subtitleFileLoc, generator)
     #overlay subtitle clip to background
