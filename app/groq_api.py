@@ -56,7 +56,15 @@ def getSubtitles(client: Groq, audioInputFile: str, srtOutputFileName: str, max_
     #format segments JSON into propper srt format
     return format_srt_segments(segments=segments, fileLocation=fileLoc)
 
+def write_file(fileName: str, data: str, folderLoc: str):
 
+    fileFolder = folderLoc
+
+    endFileLoc = f"{fileFolder}/{fileName}.txt" 
+    with open(endFileLoc, "w") as file:
+        file.write(data)
+
+    return endFileLoc
 
 # def getSubtitles(client: Groq, audioInputFile: str, srtOutputFileName: str):
     

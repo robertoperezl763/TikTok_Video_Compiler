@@ -11,3 +11,4 @@ MoviePy is then used to combine the audio, generic background video, and generat
 Final Videos are currently being manually uploaded due to Google API verification requirements for automatic uploading...
 
 Final product can be found on youtube at:
+[YouTube](https://www.youtube.com/@ScaryStoriesShorts1234/shorts)

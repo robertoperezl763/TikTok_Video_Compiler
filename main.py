@@ -4,9 +4,10 @@ from groq import Groq
 from google.cloud import texttospeech
 
 from app.google_api import createAudio
-from app.groq_api import getPrompt, getSubtitles
+from app.groq_api import getPrompt, getSubtitles, write_file
 from app.video_edit import generateFinalVideo
 import uuid
+import re
 
 #load envirnment variables from .env file
 load_dotenv(override=True)
@@ -25,7 +26,7 @@ googleClient = texttospeech.TextToSpeechClient()
 videoID = str(uuid.uuid4())
 
 #initiate required variables
-prompt = "in no more than 125 words, generate a short and scary story that would translate well for a quick youtube video. this should not be repeated from previous api calls"
+prompt = "in no more than 175 words, generate a short and scary story that would translate well for a quick youtube video. this should not be repeated from previous api calls. Response should ONLY include the story and nothing else."
 titleGenPrompt = "generate a short and concise title for a youtube video created based on the following script coming from a chat responce from a previous API call. Your answer should include nothing more than the provided title with no special characters. here is the script: "
 sysPromptStory = "you are a brilliant horor story teller, and capable of creating short, captivating and immersing stories. Each Story should be unique and new"
 sysPromptTitle = "write a short engaging and original title for this story"
@@ -38,11 +39,19 @@ script = getPrompt(client_obj=groqClient,
                    sysPrompt=sysPromptStory,
                    temp=1.2)
 
-videoTitle = title = getPrompt(client_obj=groqClient,
+videoTitle = getPrompt(client_obj=groqClient,
                   content=f"{titleGenPrompt} {script}",
                   sysPrompt=sysPromptTitle,
                   temp=0.8)
 
+videoTitle = re.sub(r'[^A-Za-z0-9\s]','' ,videoTitle) #strip any special charactrs to avoid error on append title to final video name
+
+fileData = videoTitle + "\n\n" + script
+
+rawScriptFile = write_file(fileName=videoID, 
+                           data=fileData, 
+                           folderLoc="media/rawScript")
+print(f"Script.txt File Created Siccessfully at: {rawScriptFile}")
 
 #Create Audio file from script using Google TTS API - returns audio file location
 audioFileLoc = createAudio(client=googleClient, 
@@ -65,8 +74,8 @@ print(f"Subtitles File Created Successfully at: {subtitleFileLoc}")
 
 finalVidLoc = generateFinalVideo(subtitleFileLoc=subtitleFileLoc,
                    audioFileLoc=audioFileLoc,
-                   backgroundClipLoc="media/background_video/minecraft_short.mp4",
+                   backgroundClipLoc="media/background_video/minecraft_30.mp4",
                    finalVideoName=f"{videoTitle}_{videoID}"
                    )
 
-print(f'video saved at: {finalVidLoc}')
+print(f'Final Video saved at: {finalVidLoc}')
